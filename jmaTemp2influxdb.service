@@ -1,0 +1,9 @@
+[Unit]
+Description=JMA Temperature to InfluxDB
+
+[Service]
+Type=oneshot
+TimeoutSec=30s
+WorkingDirectory=/home/ebith/workbench/jmaTemp2influxdb
+ExecStart=/usr/bin/node /home/ebith/workbench/jmaTemp2influxdb/index.js
+User=ebith

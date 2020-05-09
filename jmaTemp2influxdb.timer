@@ -1,0 +1,10 @@
+[Unit]
+Description=JMA Temperature to InfluxDB
+
+[Timer]
+OnCalendar=*-*-* *:15:00
+Persistent=true
+RandomizedDelaySec=30s
+
+[Install]
+WantedBy=timers.target
