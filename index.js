@@ -4,7 +4,7 @@ const influx = new (require('influx').InfluxDB)('http://localhost:8086/homestats
 const url = 'https://www.jma.go.jp/jp/amedas_h/today-64036.html?areaCode=000&groupCode=47';
 
 (async () => {
-  const browser = await chromium.launch();
+  const browser = await chromium.launch({executablePath: '/usr/bin/chromium'});
   const page = await browser.newPage();
   await page.goto(url);
   const result = await page.evaluate(() => {

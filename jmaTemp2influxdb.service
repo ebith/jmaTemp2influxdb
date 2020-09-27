@@ -4,6 +4,6 @@ Description=JMA Temperature to InfluxDB
 [Service]
 Type=oneshot
 TimeoutSec=30s
-WorkingDirectory=/home/ebith/workbench/jmaTemp2influxdb
-ExecStart=/usr/bin/node /home/ebith/workbench/jmaTemp2influxdb/index.js
-User=ebith
+WorkingDirectory=/home/pi/ghq/github.com/ebith/jmaTemp2influxdb
+ExecStart=/usr/bin/node /home/pi/ghq/github.com/ebith/jmaTemp2influxdb/index.js
+User=pi
