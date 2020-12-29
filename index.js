@@ -9,12 +9,13 @@ const url = 'https://www.jma.go.jp/jp/amedas_h/today-64036.html?areaCode=000&gro
   await page.goto(url);
   const result = await page.evaluate(() => {
     const today = new Date();
+    const tdLength = document.querySelector('table#tbl_list tr').querySelectorAll('td').length;
     for (const tr of document.querySelector('table#tbl_list').querySelectorAll('tr')) {
       const hour = tr.querySelector('td:nth-child(1)').textContent - 0;
       if (hour === today.getHours() || (hour === 24 && today.getHours() === 0)) {
         const temperature = tr.querySelector('td:nth-child(2)').textContent - 0;
-        const humidity = tr.querySelector('td:nth-child(7)').textContent - 0;
-        const pressure = tr.querySelector('td:nth-child(8)').textContent - 0;
+        const humidity = tr.querySelector(`td:nth-child(${tdLength - 1})`).textContent - 0;
+        const pressure = tr.querySelector(`td:nth-child(${tdLength})`).textContent - 0;
 	return [{temperature}, {humidity}, {pressure}];
       }
     }
