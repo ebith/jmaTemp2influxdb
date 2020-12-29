@@ -1,4 +1,4 @@
-const { chromium } = require('playwright-chromium');
+const { chromium } = require('playwright-core');
 const influx = new (require('influx').InfluxDB)('http://localhost:8086/homestats');
 
 const url = 'https://www.jma.go.jp/jp/amedas_h/today-64036.html?areaCode=000&groupCode=47';
