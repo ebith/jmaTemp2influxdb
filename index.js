@@ -4,7 +4,7 @@ const influx = new (require('influx').InfluxDB)('http://localhost:8086/homestats
 const url = 'https://www.jma.go.jp/jp/amedas_h/today-64036.html?areaCode=000&groupCode=47';
 
 (async () => {
-  const browser = await chromium.launch({executablePath: '/usr/bin/chromium'});
+  const browser = await chromium.launch({ executablePath: '/usr/bin/chromium' });
   const page = await browser.newPage();
   await page.goto(url);
   const result = await page.evaluate(() => {
@@ -16,18 +16,20 @@ const url = 'https://www.jma.go.jp/jp/amedas_h/today-64036.html?areaCode=000&gro
         const temperature = tr.querySelector('td:nth-child(2)').textContent - 0;
         const humidity = tr.querySelector(`td:nth-child(${tdLength - 1})`).textContent - 0;
         const pressure = tr.querySelector(`td:nth-child(${tdLength})`).textContent - 0;
-	return [{temperature}, {humidity}, {pressure}];
+        return [{ temperature }, { humidity }, { pressure }];
       }
     }
   });
   await browser.close();
-  const fields = result.filter((value) => {
-    return !Number.isNaN(Object.values(value)[0]);
-  }).reduce((acc, cur) => {
-     const key = Object.keys(cur);
-     acc[key] = cur[key];
-     return acc;
-  });
+  const fields = result
+    .filter((value) => {
+      return !Number.isNaN(Object.values(value)[0]);
+    })
+    .reduce((accumulator, current) => {
+      const key = Object.keys(current);
+      accumulator[key] = current[key];
+      return accumulator;
+    });
   const today = new Date();
   today.setHours(today.getHours(), 0, 0);
   const points = [
