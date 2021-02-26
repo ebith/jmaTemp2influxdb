@@ -1,27 +1,6 @@
 {
   "dependencies": {
-    "influx": "^5.5.1",
-    "playwright-core": "^1.7.1"
-  },
-  "devDependencies": {
-    "eslint": "^6.8.0",
-    "eslint-config-prettier": "^6.11.0",
-    "eslint-config-xo-space": "^0.24.0",
-    "eslint-plugin-eslint-comments": "^3.1.2",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-unicorn": "^19.0.1",
-    "prettier": "^2.0.5"
-  },
-  "eslintConfig": {
-    "extends": [
-      "xo-space",
-      "plugin:unicorn/recommended",
-      "plugin:eslint-comments/recommended",
-      "prettier"
-    ],
-    "env": {
-      "node": true,
-      "browser": true
-    }
+    "got": "^11.8.2",
+    "influx": "^5.5.1"
   }
 }

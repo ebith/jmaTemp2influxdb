@@ -1,37 +1,36 @@
-const { chromium } = require('playwright-core');
+const got = require('got');
 const influx = new (require('influx').InfluxDB)('http://localhost:8086/homestats');
 
-const url = 'https://www.jma.go.jp/jp/amedas_h/today-64036.html?areaCode=000&groupCode=47';
-
 (async () => {
-  const browser = await chromium.launch({ executablePath: '/usr/bin/chromium' });
-  const page = await browser.newPage();
-  await page.goto(url);
-  const result = await page.evaluate(() => {
-    const today = new Date();
-    const tdLength = document.querySelector('table#tbl_list tr').querySelectorAll('td').length;
-    for (const tr of document.querySelector('table#tbl_list').querySelectorAll('tr')) {
-      const hour = tr.querySelector('td:nth-child(1)').textContent - 0;
-      if (hour === today.getHours() || (hour === 24 && today.getHours() === 0)) {
-        const temperature = tr.querySelector('td:nth-child(2)').textContent - 0;
-        const humidity = tr.querySelector(`td:nth-child(${tdLength - 1})`).textContent - 0;
-        const pressure = tr.querySelector(`td:nth-child(${tdLength})`).textContent - 0;
-        return [{ temperature }, { humidity }, { pressure }];
-      }
+  const zp = (n) => {
+    return ('0' + n).slice(-2);
+  };
+  const now = new Date();
+  const hours = (now) => {
+    const range = [0, 3, 6, 9, 12, 15, 18, 21];
+    let hours = now.getHours();
+    while (!range.includes(hours)) {
+      hours--;
     }
+    return hours;
+  };
+
+  const url = `https://www.jma.go.jp/bosai/amedas/data/point/64036/${now.getFullYear()}${zp(now.getMonth() + 1)}${zp(now.getDate())}_${zp(hours(now))}.json`;
+  const { body } = await got(url, {
+    responseType: 'json',
   });
-  await browser.close();
-  const fields = result
-    .filter((value) => {
-      return !Number.isNaN(Object.values(value)[0]);
-    })
-    .reduce((accumulator, current) => {
-      const key = Object.keys(current);
-      accumulator[key] = current[key];
-      return accumulator;
-    });
-  const today = new Date();
-  today.setHours(today.getHours(), 0, 0);
+
+  const keys = Object.keys(body).sort((a, b) => {
+    return b - a;
+  });
+  const data = body[keys[0]];
+  const fields = {
+    temperature: data.temp[0],
+    humidity: data.humidity[0],
+    pressure: data.pressure[0],
+  };
+
+  now.setHours(keys[0].slice(-6, -4), keys[0].slice(-4, -2), 0);
   const points = [
     {
       measurement: 'jma',
@@ -39,7 +38,7 @@ const url = 'https://www.jma.go.jp/jp/amedas_h/today-64036.html?areaCode=000&gro
         location: 'nara',
       },
       fields,
-      timestamp: today,
+      timestamp: now,
     },
   ];
   influx.writePoints(points).catch((error) => console.error(error));
